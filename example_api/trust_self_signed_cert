@@ -1,0 +1,6 @@
+#!/bin/bash
+# see: https://wiki.archlinux.org/index.php/User:Grawity/Adding_a_trusted_CA_certificate
+# cert and key generated using:
+# openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj '/CN=localhost'
+
+sudo trust anchor --store ./cert.pem

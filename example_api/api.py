@@ -108,7 +108,7 @@ if GENERATE_REQUEST_ID:
 
     @app.middleware('response')
     async def set_request_id_response_header(request, response):
-        response.headers['x-request-id'] = request.ctx.request_id
+        response.headers['X-Request-ID'] = request.ctx.request_id
 
 
 app.static('/', 'index.html')
@@ -149,5 +149,6 @@ if __name__ == "__main__":
     # option 2 - run /metrics on a separate port
     # monitor(app).start_server(addr="0.0.0.0", port=8001)
     # this one does not work with multiple workers
+    extra['ssl'] = {'cert': "./cert.pem", 'key': "./key.pem"}
 
-    app.run(host="0.0.0.0", port=8000, **extra)
+    app.run(host="0.0.0.0", port=8443, **extra)
