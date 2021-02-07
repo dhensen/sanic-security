@@ -33,11 +33,15 @@ ALLOWED_ORIGINS = [
 ]
 
 if USE_HSTS:
+
     @app.middleware('response')
     async def insert_hsts(request, response):
-        response.headers['Strict-Transport-Security'] = 'max-age=86400; includeSubDomains'
+        response.headers[
+            'Strict-Transport-Security'] = 'max-age=86400; includeSubDomains'
+
 
 if ORIGIN_CHECK:
+
     @app.middleware('request')
     async def check_origin(request):
         """Returns a 403 acces denied  json response
@@ -88,27 +92,27 @@ if ORIGIN_CHECK:
                 log.info(f'origin {origin_host} is not allowed')
                 return check_origin.access_denied_response
 
-
     check_origin.access_denied_response = json({'error': 'access denied'},
-                                            status=403)
-
-if GENERATE_REQUEST_ID:
-    @app.middleware('request')
-    async def set_request_id(request):
-        request_id = request.headers.get('X-Request-ID') or str(uuid.uuid4())
-        try:
-            request.ctx.request_id = request_id
-        except Exception as exc:
-            print(exc)
+                                               status=403)
 
 
-    @app.middleware('request')
-    async def log_request_id(request):
-        log.info(f'request_id={request.ctx.request_id}')
+@app.middleware('request')
+async def set_request_id(request):
+    request_id = request.headers.get('X-Request-ID')
 
-    @app.middleware('response')
-    async def set_request_id_response_header(request, response):
-        response.headers['X-Request-ID'] = request.ctx.request_id
+    if GENERATE_REQUEST_ID and not request_id:
+        request_id = str(uuid.uuid4())
+
+    if request_id:
+        request.ctx.request_id = request_id
+
+@app.middleware('request')
+async def log_request_id(request):
+    log.info(f'request_id={request.ctx.request_id}')
+
+@app.middleware('response')
+async def set_request_id_response_header(request, response):
+    response.headers['X-Request-ID'] = request.ctx.request_id
 
 
 app.static('/', 'index.html')
