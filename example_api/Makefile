@@ -8,5 +8,9 @@ venv:
 	poetry install
 	poetry run pip install -e ../sanic-security
 
-run:
+run: .regen_keys
 	poetry run python3 api.py
+
+.regen_keys:
+	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj '/CN=localhost'
+	touch .regen_keys

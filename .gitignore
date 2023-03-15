@@ -1,4 +1,6 @@
 
+example_api/.regen_keys
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
