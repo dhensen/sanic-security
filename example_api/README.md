@@ -1,7 +1,15 @@
 # Example Api using <my package name>
 
-## Regenerate key.pem and cert.pem
+## Prerequisites
+
+- make
+- pyenv
+- poetry
+
+## Usage
+
+Run the following command to setup your virtualenv, generate self signed certs and run the api:
 
 ```
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj '/CN=localhost'
+make
 ```
