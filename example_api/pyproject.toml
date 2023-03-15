@@ -5,7 +5,7 @@ description = ""
 authors = ["Dino Hensen <dino.hensen@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 sanic = "^20.12.1"
 sanic-prometheus = "^0.2.1"
 uvicorn = "^0.13.3"

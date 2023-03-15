@@ -6,6 +6,11 @@ def get_check_origin_func(logger, use_referer_as_fallback: bool,
                           check_origin_against_host: bool,
                           check_origin_against_allowed_origins: bool,
                           allowed_origins: bool):
+    """
+    Denies access to requests that:
+    - dont have the Origin header set
+    - have the Origin header, but the value does not match the Host header
+    """
     async def check_origin(request):
         """Returns a 403 acces denied  json response
         if the origin is not in the list of allowed origins.
@@ -41,11 +46,12 @@ def get_check_origin_func(logger, use_referer_as_fallback: bool,
         origin_host = parse_result.netloc
 
         if check_origin_against_host:
+            print(request.headers['host'])
             host = request.headers.get('host')
             # TODO: netloc solves origin url to host equivalent, what about referer?
             if host != origin_host:
                 logger.info(
-                    f'host {host} does not equal origin_host={origin_host} based on origin={origin}'
+                    f'host={host} does not equal origin_host={origin_host} based on origin={origin}'
                 )
                 # print(f'host: {host}, origin: {origin}, netloc: {res.netloc}')
                 return check_origin.access_denied_response

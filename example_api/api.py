@@ -1,6 +1,6 @@
 import random
-import uuid
 import logging
+from typing import Any, Dict
 
 from prometheus_client import Counter
 from sanic import Sanic
@@ -8,7 +8,7 @@ from sanic.response import json
 from sanic_prometheus import monitor
 from sanic_security import SanicSecurity
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,9 @@ SanicSecurity(app,
 app.static('/', 'index.html')
 
 
-@app.route('/api/ip')
+# temporarily add POST because I wanted to see that browser sets Origin header for POST
+# it does not set it for GET/HEAD, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
+@app.route('/api/ip', methods=['GET', 'POST'])
 async def get_ip(request):
     if random.random() < 0.1:
         raise UserException('random error')
@@ -40,8 +42,10 @@ async def get_ip(request):
 
 @app.exception(Exception)
 async def all_exceptions(request, exception):
+    del request  # unused
     exception_counter.inc()
     message = 'server_error'
+    logger.exception(exception)
     if isinstance(exception, UserException):
         message = f'{message}: {exception}'
     return json({'error': {'message': message}}, status=500)
@@ -49,7 +53,7 @@ async def all_exceptions(request, exception):
 
 if __name__ == "__main__":
     import os
-    extra = {'debug': True}
+    extra: Dict[str, Any] = {'debug': True}
     if os.getenv('SKIP_LOGGING'):
         logger.debug('SKIP_LOGGING env var is set:')
         logger.debug(' - disabling debug')
