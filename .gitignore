@@ -1,5 +1,7 @@
 
 example_api/.regen_keys
+example_api/key.pem
+example_api/cert.pem
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
